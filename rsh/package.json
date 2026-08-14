@@ -20,6 +20,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "postbuild": "termux-fix-shebang dist/cli/index.js 2>/dev/null || true",
     "dev": "tsx cli/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",

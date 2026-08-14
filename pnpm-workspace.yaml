@@ -1,8 +1,15 @@
 packages:
+  - rsh
   - artifacts/*
   - lib/*
   - lib/integrations/*
   - scripts
+
+allowBuilds:
+  '@firebase/util': true
+  '@google/genai': true
+  esbuild: true
+  re2: true
 
 autoInstallPeers: false
 

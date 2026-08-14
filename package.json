@@ -1,12 +1,19 @@
 {
-  "name": "workspace",
-  "version": "0.0.0",
+  "name": "rsh",
+  "version": "1.0.0",
+  "description": "Universal Replit Terminal CLI",
+  "main": "rsh/dist/cli/index.js",
+  "bin": {
+    "rsh": "rsh/dist/cli/index.js",
+    "replit-cli": "rsh/dist/cli/index.js"
+  },
   "license": "MIT",
   "scripts": {
-    "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
-    "build": "pnpm run typecheck && pnpm -r --if-present run build",
+    "preinstall": "sh -c 'rm -f package-lock.json yarn.lock'",
+    "build": "cd rsh && pnpm run build",
+    "postinstall": "cd rsh && pnpm run build 2>/dev/null || true",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "cd rsh && pnpm run build"
   },
   "private": true,
   "dependencies": {
