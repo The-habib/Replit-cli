@@ -14,18 +14,29 @@
     "@google/genai": "^2.16.0",
     "@modelcontextprotocol/sdk": "^1.30.0",
     "@replit/connectors-sdk": "^0.4.1",
+    "@replit/crosis": "^13.7.0",
+    "@replit/protocol": "^0.4.29",
+    "chalk": "^6.0.0",
     "cheerio": "^1.2.0",
+    "commander": "^15.0.0",
+    "enquirer": "^2.4.1",
     "firebase": "^12.17.1",
     "firebase-admin": "^14.2.0",
     "openai": "^7.4.0",
+    "ora": "^9.4.1",
     "pdf-lib": "^1.17.1",
     "playwright-core": "^1.62.1",
     "sharp": "^0.35.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "ws": "^8.21.3",
+    "zod": "catalog:"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/ws": "^8.18.1",
     "firebase-tools": "^15.26.0",
     "prettier": "^3.9.6",
+    "tsx": "catalog:",
     "typescript": "~5.9.3"
   }
 }
