@@ -47,7 +47,8 @@ fi
 
 echo "→ Installing dependencies..."
 cd "$REPO_DIR/rsh"
-$PM install
+$PM install || true
+$PM approve-builds --all 2>/dev/null || true
 
 echo "→ Building TypeScript binary..."
 $PM run build
