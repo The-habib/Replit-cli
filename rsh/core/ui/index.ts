@@ -9,3 +9,5 @@ export * from './spinner.js';
 export * from './error-view.js';
 export * from './header.js';
 export * from './prompt.js';
+export * from './breadcrumbs.js';
+export * from './launcher.js';

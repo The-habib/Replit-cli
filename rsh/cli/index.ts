@@ -36,6 +36,7 @@ import { defaultApiClient } from '../api/client.js';
 import { defaultLogger } from '../core/logger.js';
 import { defaultThemeEngine } from '../core/theme/index.js';
 import { suggestCommand } from '../core/did-you-mean.js';
+import { runInteractiveLauncher } from '../core/ui/launcher.js';
 import chalk from 'chalk';
 
 const KNOWN_COMMANDS = [
@@ -47,6 +48,8 @@ const KNOWN_COMMANDS = [
   'bridge',
   'doctor',
   'update',
+  'menu',
+  'launcher',
   'ls',
   'new',
   'open',
@@ -136,6 +139,15 @@ registerCompletionsCommand(program);
 registerAskCommand(program);
 registerAgentCommand(program);
 
+// Explicit interactive menu command
+program
+  .command('menu')
+  .alias('launcher')
+  .description('Open interactive command center and workflow launcher')
+  .action(async () => {
+    await runInteractiveLauncher();
+  });
+
 // Handle unknown commands with "Did you mean?" suggestions
 program.on('command:*', (operands) => {
   const unknownCmd = operands[0];
@@ -154,10 +166,17 @@ program.on('command:*', (operands) => {
   process.exit(1);
 });
 
-// Default behavior when run with no arguments: show banner & help
+// Default behavior when run with no arguments: Launch interactive menu if TTY, or show help if piped
 if (process.argv.length <= 2) {
-  UI.banner();
-  program.outputHelp();
+  if (process.stdout.isTTY && !process.env.CI) {
+    runInteractiveLauncher().catch((err) => {
+      UI.error(err.message);
+      process.exit(1);
+    });
+  } else {
+    UI.banner();
+    program.outputHelp();
+  }
 } else {
   program.parseAsync(process.argv).catch((err) => {
     UI.error(err.message);
