@@ -34,19 +34,60 @@ import { registerDoctorCommand } from './commands/doctor.js';
 import { registerUpdateCommand } from './commands/update.js';
 import { defaultApiClient } from '../api/client.js';
 import { defaultLogger } from '../core/logger.js';
+import { defaultThemeEngine } from '../core/theme/index.js';
+import { suggestCommand } from '../core/did-you-mean.js';
+import chalk from 'chalk';
+
+const KNOWN_COMMANDS = [
+  'login',
+  'logout',
+  'accounts',
+  'switch',
+  'whoami',
+  'bridge',
+  'doctor',
+  'update',
+  'ls',
+  'new',
+  'open',
+  'duplicate',
+  'rename',
+  'delete',
+  'import',
+  'shell',
+  'exec',
+  'clone',
+  'pull',
+  'push',
+  'run',
+  'restart',
+  'deploy',
+  'logs',
+  'secrets',
+  'db',
+  'env',
+  'config',
+  'completions',
+  'ask',
+  'agent',
+];
 
 const program = new Command();
 
 program
   .name('rsh')
-  .description('Universal Cross-Platform Replit Terminal CLI — Manage projects, live shell, secrets, sync, databases, deployments, and AI coding')
+  .description('Universal Replit Terminal CLI — Manage projects, live shell, secrets, sync, databases, deployments, and AI coding')
   .version('1.0.0')
   .option('-t, --token <token>', 'Override Replit API token for this invocation')
   .option('-s, --sid <connectSid>', 'Override Replit connect.sid cookie for this invocation')
   .option('--mock', 'Enable mock container & API mode for offline testing')
   .option('-d, --debug', 'Enable verbose debug diagnostics and protocol logging')
+  .option('--monochrome', 'Disable colors and use plain ASCII output')
   .hook('preAction', (thisCommand) => {
     const opts = (thisCommand as any).optsWithGlobals ? (thisCommand as any).optsWithGlobals() : program.opts();
+    if (opts.monochrome) {
+      defaultThemeEngine.setMode('monochrome');
+    }
     if (opts.debug || process.argv.includes('--debug') || process.argv.includes('-d')) {
       process.env.RSH_DEBUG = 'true';
       defaultLogger.setDebug(true);
@@ -94,6 +135,24 @@ registerConfigCommand(program);
 registerCompletionsCommand(program);
 registerAskCommand(program);
 registerAgentCommand(program);
+
+// Handle unknown commands with "Did you mean?" suggestions
+program.on('command:*', (operands) => {
+  const unknownCmd = operands[0];
+  const suggestions = suggestCommand(unknownCmd, KNOWN_COMMANDS);
+
+  console.error(`\n${chalk.bold.red('Error:')} '${unknownCmd}' is not a valid rsh command.`);
+
+  if (suggestions.length > 0) {
+    console.error(`\n${chalk.bold('Did you mean:')}`);
+    suggestions.forEach((s) => {
+      console.error(`  ${chalk.cyan('rsh')} ${chalk.bold.yellow(s)}`);
+    });
+  }
+
+  console.error(`\nRun ${chalk.yellow('rsh --help')} for a list of all available commands.\n`);
+  process.exit(1);
+});
 
 // Default behavior when run with no arguments: show banner & help
 if (process.argv.length <= 2) {

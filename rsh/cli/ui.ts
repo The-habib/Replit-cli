@@ -1,77 +1,86 @@
 import chalk from 'chalk';
 import ora, { Ora } from 'ora';
+import {
+  BadgeVariant,
+  createSpinner,
+  renderBadge,
+  renderBanner,
+  renderCard,
+  renderCommandHeader,
+  renderDiff,
+  renderEditorialError,
+  renderProgressBar,
+  renderTable,
+  renderTimeline,
+  renderTree,
+  SpinnerContext,
+  TimelineStep,
+  TreeNode,
+} from '../core/ui/index.js';
+import { defaultThemeEngine } from '../core/theme/index.js';
 
 export class UI {
   public static banner(): void {
-    console.log(
-      chalk.bold.hex('#F26207')('  ____  ____  _   _ ') + chalk.bold.gray('— Replit Shell CLI (rsh)')
-    );
-    console.log(chalk.bold.hex('#F26207')(' |  _ \\/ ___|| | | |'));
-    console.log(chalk.bold.hex('#F26207')(' | |_) \\___ \\| |_| |') + chalk.dim('  The command-line companion for Replit'));
-    console.log(chalk.bold.hex('#F26207')(' |  _ < ___) |  _  |'));
-    console.log(chalk.bold.hex('#F26207')(' |_| \\_\\____/|_| |_|\n'));
+    console.log(renderBanner());
+  }
+
+  public static header(title: string, subtitle?: string): void {
+    console.log(renderCommandHeader(title, subtitle));
   }
 
   public static success(msg: string): void {
-    console.log(chalk.green('✔ ') + chalk.bold(msg));
+    const theme = defaultThemeEngine.getTheme();
+    console.log(`${theme.colors.success(theme.icons.check)} ${msg}`);
   }
 
   public static error(msg: string): void {
-    console.error(chalk.red('✖ ') + chalk.bold(msg));
-  }
-
-  public static info(msg: string): void {
-    console.log(chalk.cyan('ℹ ') + msg);
+    const theme = defaultThemeEngine.getTheme();
+    console.error(`${theme.colors.error(theme.icons.cross)} ${msg}`);
   }
 
   public static warn(msg: string): void {
-    console.log(chalk.yellow('⚠ ') + msg);
+    const theme = defaultThemeEngine.getTheme();
+    console.warn(`${theme.colors.warning(theme.icons.warning)} ${msg}`);
   }
 
-  public static spinner(text: string): Ora {
-    return ora({
-      text,
-      color: 'cyan',
-    }).start();
+  public static info(msg: string): void {
+    const theme = defaultThemeEngine.getTheme();
+    console.log(`${theme.colors.info(theme.icons.info)} ${msg}`);
   }
 
-  public static table(
-    headers: string[],
-    rows: string[][],
-    colWidths?: number[]
-  ): void {
-    const widths = colWidths || headers.map((h, i) => {
-      const maxRowLen = rows.reduce((max, row) => Math.max(max, (row[i] || '').length), 0);
-      return Math.max(h.length, maxRowLen) + 2;
-    });
-
-    const headerStr = headers
-      .map((h, i) => chalk.bold.cyan(h.padEnd(widths[i])))
-      .join('  ');
-    const divider = widths.map((w) => '─'.repeat(w)).join('──');
-
-    console.log(headerStr);
-    console.log(chalk.gray(divider));
-
-    for (const row of rows) {
-      const rowStr = row
-        .map((cell, i) => (cell || '').padEnd(widths[i]))
-        .join('  ');
-      console.log(rowStr);
-    }
+  public static spinner(text: string, context?: SpinnerContext): Ora {
+    return createSpinner(text, context);
   }
 
-  public static badge(text: string, color: 'green' | 'blue' | 'yellow' | 'gray' = 'blue'): string {
-    switch (color) {
-      case 'green':
-        return chalk.bgGreen.black(` ${text} `);
-      case 'yellow':
-        return chalk.bgYellow.black(` ${text} `);
-      case 'gray':
-        return chalk.bgGray.white(` ${text} `);
-      case 'blue':
-      default:
-        return chalk.bgCyan.black(` ${text} `);
-    }
+  public static table(headers: string[], rows: string[][]): void {
+    console.log(renderTable(headers, rows));
+  }
+
+  public static badge(text: string, variant: BadgeVariant = 'gray'): string {
+    return renderBadge(text, variant);
+  }
+
+  public static card(body: string | string[], options?: any): string {
+    return renderCard(body, options);
+  }
+
+  public static tree(nodes: TreeNode[]): void {
+    console.log(renderTree(nodes));
+  }
+
+  public static timeline(steps: TimelineStep[]): void {
+    console.log(renderTimeline(steps));
+  }
+
+  public static diff(filename: string, oldContent: string, newContent: string): void {
+    console.log(renderDiff(filename, oldContent, newContent));
+  }
+
+  public static progress(current: number, total: number, options?: any): string {
+    return renderProgressBar(current, total, options);
+  }
+
+  public static editorialError(options: any): void {
+    console.error(renderEditorialError(options));
   }
 }
