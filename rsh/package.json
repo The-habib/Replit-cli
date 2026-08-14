@@ -1,18 +1,40 @@
 {
   "name": "rsh",
   "version": "1.0.0",
-  "description": "Production Replit Terminal CLI - Interact with Replit from your terminal",
+  "description": "Universal Cross-Platform Replit Terminal CLI — Interact with Replit from your terminal",
   "main": "dist/cli/index.js",
+  "types": "dist/cli/index.d.ts",
   "bin": {
     "rsh": "dist/cli/index.js"
+  },
+  "files": [
+    "dist",
+    "install.sh",
+    "install.ps1",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsx cli/index.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "pack": "npm pack"
   },
-  "keywords": ["replit", "cli", "terminal", "crosis", "remote-shell", "ai-agent"],
-  "author": "Autonomous Engineering Agent",
+  "keywords": [
+    "replit",
+    "cli",
+    "terminal",
+    "crosis",
+    "remote-shell",
+    "pty",
+    "ai-agent",
+    "developer-tools"
+  ],
+  "author": "Replit Community Engineers",
   "license": "MIT"
 }
